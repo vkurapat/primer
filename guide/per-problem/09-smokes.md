@@ -15,6 +15,15 @@
 - **Student project:** `smokes`
 - **Data prep:** none in the tutorial — the `smokes` tibble is already filtered, sampled, and factor-coded. Setup chunk loads `library(primer.tutorials)` and uses `smokes` directly (no intermediate `x`).
 - **Final model:** `logistic_reg(engine = "glm") |> fit(smoke ~ age + sex, data = smokes)` → `fit_smokes`
+- **DGM (Courage):** Show the fitted DGM and its expected value as separate displayed equations, DGM first, in both the chapter's and the tutorial's Courage section (and wherever the tutorial restates the final model, e.g. its Summary). Use $\rho$ / $\hat{\rho}$ consistently for the probability that `smoke = "Yes"` (the notation the tutorial's preamble introduces); don't switch to $\widehat{P(\text{Ever Smoked} = \text{Yes})}$.
+  1. **Fitted DGM, two stages:**
+     - *Link, with no randomness:* $\log\!\big(\hat{\rho}/(1-\hat{\rho})\big) = -0.875 + 0.007 \cdot \text{Age} + 0.545 \cdot \text{sexMale}$. Plug in an age and a sex and you get one log-odds, and therefore one probability $\hat{\rho}$.
+     - *Draw, which is random:* $Y \sim \text{Bernoulli}(\hat{\rho})$, with $Y = 1$ meaning `smoke = "Yes"`. This draw is where the randomness lives. It plays the role that $+\,\epsilon$ plays in 05 Recruits: two adults with the same age and sex share a probability, not an outcome.
+
+     Label *both stages together* "our fitted data generating mechanism." A fitted logistic DGM without its Bernoulli draw is as incomplete as a fitted linear DGM without its $\epsilon$.
+  2. **Expected value:** $\hat{\rho} = \dfrac{1}{1 + e^{-(-0.875 + 0.007 \cdot \text{Age} + 0.545 \cdot \text{sexMale})}}$. Unlike Recruits, there is no $\epsilon$ to set to zero. For a Bernoulli outcome $E[Y] = \rho$, so the deterministic first stage, solved for $\hat{\rho}$, *is* the expected value. The prose should name that contrast explicitly, because this is the curriculum's first link-function tutorial. The hat marks an estimated expected value, not the mechanism. The randomness is set aside in the draw, not gone.
+
+  Don't use the older form that showed the hatted probability formula first, said "the randomness is gone," and gave $Y \sim \text{Bernoulli}(\hat{\rho})$ only as an afterthought. It made the expected value look like the DGM. See `dgm.md` §18.3.
 - **Courage three-fit block** (per §13.4):
   - Fit A: `smoke ~ sex` (binary, clean signal)
   - Fit B: `smoke ~ age` (continuous, borderline — the "covariate barely helps" lesson)
