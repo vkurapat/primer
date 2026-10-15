@@ -14,6 +14,11 @@
 - **Student project:** `recruits`
 - **Data prep:** none in the tutorial — the `recruits` tibble is already filtered and sliced. Setup chunk uses `recruits` directly (no intermediate `x`).
 - **Final model:** `linear_reg() |> set_engine("lm") |> fit(height ~ sex, data = recruits)` → `fit_recruits`
+- **DGM (Courage):** Show the fitted DGM and its expected value as two separate displayed equations, DGM first, in both the chapter's and the tutorial's Courage section (the tutorial shows them again in its Summary):
+  1. **Fitted DGM, with ε included:** $\text{height} = 165.9 + 8.9 \cdot \text{sexMale} + \epsilon, \quad \epsilon \sim N(0, 41.0)$. Here 41.0 is the estimated error *variance* (residual SD ≈ 6.4 cm). Say in the prose that both the coefficients and the error variance have been replaced by their estimates, and label *this* equation "our fitted data generating mechanism."
+  2. **Expected value, with ε = 0:** $\widehat{\text{height}} = 165.9 + 8.9 \cdot \text{sexMale}$. Introduce it as what you get by setting ε to its expected value of zero, because most questions want a single number rather than a distribution. The hat marks an estimated expected value, not the mechanism: the randomness is set aside, not deleted.
+
+  Don't use the older form that showed only the hatted equation with "residuals drawn from N(0, 41.0)" as a side note. It made the expected value look like the DGM. See `dgm.md` §18.1 (and §18.3 for the parallel in non-linear families).
 - **Preceptor Table:** Unit (Young Adult) | Outcome (Height cm) | Covariate (Sex)
 - **Population Table:** Source | Unit/Time (Young Adult, Year) | Outcome (Height cm) | Covariate (Sex)
 - **Paired question (chapter only):** What is the average causal effect of sex on a recruit's height? The implied manipulation is biologically absurd --- you cannot toggle a recruit's sex --- so the chapter explicitly names the absurdity and uses it to make the predictive/causal distinction visible (per §1.2's *paired-question-required-even-when-absurd* rule).
