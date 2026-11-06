@@ -672,12 +672,18 @@ fit_mail <- logistic_reg(engine = "glm") |>
   fit(applied_mail ~ treatment + party + age + sex, data = x)
 ```
 
-With the parameters estimated, the fitted DGM is:
+With the parameters estimated, the fitted DGM runs in two stages. The first is deterministic: a voter's covariates fix one probability of applying to vote by mail. The second is random: whether the voter actually applies is a single draw from that probability. Written out, the fitted DGM is
+
+$$Y_i \sim \text{Bernoulli}(\widehat{\rho}_i)$$
+
+The draw is where the mechanism's randomness lives. It plays the role an additive error term plays in a linear model: voters with identical covariates share a probability, not a decision.
+
+The hatted probability is the DGM's expected value --- its deterministic half, with the draw set aside. It comes from the inverse logit of the estimated log-odds:
 
 $$
 \begin{aligned}
-\widehat{P(\text{Applied} = \text{Yes})} = \frac{1}{1 + e^{-\eta}}, \quad
-\eta = -1.75 &+ 0.030 \cdot \text{Self} + 0.035 \cdot \text{Neighborhood} \\
+\widehat{\rho} = \frac{1}{1 + e^{-\widehat{\eta}}}, \quad
+\widehat{\eta} = -1.75 &+ 0.030 \cdot \text{Self} + 0.035 \cdot \text{Neighborhood} \\
 &- 0.864 \cdot \text{None} - 0.933 \cdot \text{Republican} - 0.950 \cdot \text{ThirdParty} \\
 &+ 0.276 \cdot \text{Age30-39} + 0.270 \cdot \text{Age40-49} + 0.554 \cdot \text{Age50-64} \\
 &+ 1.113 \cdot \text{Age65-121} - 0.355 \cdot \text{Male}
@@ -686,7 +692,7 @@ $$
 
 Every term is a 0/1 dummy. The intercept (-1.75) is the log-odds of applying for the reference voter: sent no postcard, registered Democrat, aged 18-29, female --- a probability of about 15%. Each coefficient shifts that log-odds when its dummy switches on.
 
-The equation's $\eta$ (the log-odds), the probability it becomes, and the class a highest-probability rule would assign are all expected-value readings of the one DGM. When a question needs an individual outcome, the randomness enters at the final step: whether a given voter actually applies is a draw, $Y \sim \text{Bernoulli}(\widehat{\rho})$. Voters with identical covariates share a probability --- about one in six for the reference voter --- not a decision.
+Most questions in Temperance want this expected value: the probability that a voter applies, or how much a postcard shifts it. A question about individual voters --- how many of 1,000 reference voters would actually apply --- needs the draw back.
 
 **This is our data generating mechanism.** It serves both the primary causal question and the paired predictive question.
 
