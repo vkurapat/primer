@@ -556,15 +556,21 @@ fit_nes <- multinom_reg(engine = "nnet") |>
   fit(pres_vote ~ sex, data = nes_92)
 ```
 
-With the parameters estimated, the fitted DGM consists of two Bush-relative log-odds equations:
+With the parameters estimated, the fitted DGM runs in two stages. The first is deterministic: a voter's sex fixes three vote probabilities. The second is random: the voter's actual choice is a single draw from those three probabilities. Written out, the fitted DGM is
 
-$$\log\!\left[\frac{P(\text{Clinton})}{P(\text{Bush})}\right] = 0.455 - 0.255 \cdot \text{sexMale}
+$$Y_i \sim \text{Multinomial}(\widehat{\rho}_{\text{Clinton},i},\ \widehat{\rho}_{\text{Bush},i},\ \widehat{\rho}_{\text{Perot},i})$$
+
+The draw is where the mechanism's randomness lives. It plays the role an additive error term plays in a linear model: two voters of the same sex share the three probabilities, not the vote.
+
+The hatted probabilities are the DGM's expected value --- its deterministic half, with the draw set aside. They come from two Bush-relative log-odds equations:
+
+$$\log\!\left[\frac{\widehat{\rho}_{\text{Clinton}}}{\widehat{\rho}_{\text{Bush}}}\right] = 0.455 - 0.255 \cdot \text{sexMale}
 \qquad
-\log\!\left[\frac{P(\text{Perot})}{P(\text{Bush})}\right] = -0.852 + 0.420 \cdot \text{sexMale}$$
+\log\!\left[\frac{\widehat{\rho}_{\text{Perot}}}{\widehat{\rho}_{\text{Bush}}}\right] = -0.852 + 0.420 \cdot \text{sexMale}$$
 
 `sexMale` is a 0/1 dummy: 1 for male, 0 for female. The multinomial wrapper turns these two equations into three probabilities that sum to one for every voter. Because the model has one binary covariate and the outcome has three categories, it carries exactly as many parameters (four) as there are free group shares to match (two sexes × three candidates, minus the two sum-to-one constraints) --- the model is *saturated*, and its predicted probabilities will reproduce the observed group shares exactly.
 
-The two equations, their inverse-logit translation into three probabilities, and the class a highest-probability rule would pick are all expected-value readings of the same DGM. When a question needs an individual outcome, the randomness enters at the final step: a voter's choice is a single draw from their three probabilities, $Y \sim \text{Multinomial}(\widehat{\rho}_{\text{Clinton}}, \widehat{\rho}_{\text{Bush}}, \widehat{\rho}_{\text{Perot}})$. Two voters of the same sex share the three probabilities, not the vote.
+Most questions in Temperance want these expected values: the probability that a woman voted for Perot, or the gap between men and women. A question about individual votes --- how many of 100 women would vote Perot --- needs the draw back.
 
 **This is our data generating mechanism.** It serves both the primary predictive question and the paired causal question.
 
